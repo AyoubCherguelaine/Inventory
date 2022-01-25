@@ -31,7 +31,7 @@ app.get('/Dashboard', function(req, res){
 
         res.send('welcome');
     
-})
+});
 
 
 
