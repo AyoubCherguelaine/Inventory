@@ -22,9 +22,7 @@ var max = 60000 *60*24;//day
 app.use(session({ secret: 'keyboard cat', cookie: { maxAge: max }}));
 
 // Access the session as req.session
-app.get('/', function(req, res, next) {
-  
-})
+
 
 
 
