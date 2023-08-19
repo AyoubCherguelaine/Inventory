@@ -1,35 +1,60 @@
 const {ArticleModel,BaseArticleModel,DimensionModel} = require('../Models/ArticleModel');
 
 class ArticleController {
-  async createArticle(req, res) {
+  async createArticle(req, res,next) {
     try {
-      const newArticle = req.body;
-      const createdArticle = await ArticleModel.create(newArticle);
-      res.status(201).json(createdArticle);
+      const articleData = req.body;
+      await ArticleModel.create(articleData,(result)=>{
+        res.status(201).json(result);
+      })
+      // .then(article => {
+      //   res.status(201).json(article);
+      // })
+      // .catch(error => {
+      //   next(error);
+      // });
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while creating the article' });
     }
   }
 
-  async getArticle(req, res) {
+  async getArticle(req, res,next) {
     try {
       const articleId = parseInt(req.params.id);
-      const article = await ArticleModel.findById(articleId);
-      if (article) {
-        res.json(article);
-      } else {
-        res.status(404).json({ message: 'Article not found' });
-      }
+      await ArticleModel.findById(articleId,(result)=>{
+        if (!result) {
+          return res.status(404).json({ message: 'Article not found' });
+        }
+        res.json(result);
+      })
+
+      // .then(article => {
+      //   if (!article) {
+      //     return res.status(404).json({ message: 'Article not found' });
+      //   }
+      //   res.json(article);
+      // })
+      // .catch(error => {
+      //   next(error);
+      // });
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while fetching the article' });
     }
   }
 
-  async getAllArticles(req, res) {
+  async getAllArticles(req, res,next) {
     try {
-      const articles = await ArticleModel.findAll();
-      res.json(articles);
+      await ArticleModel.findAll((result)=>{
+        res.json(result);
+    })
+    // .then(articles => {
+    //   res.json(articles);
+    // })
+    // .catch(error => {
+    //   next(error);
+    // });
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: 'An error occurred while fetching articles' });
     }
   }
@@ -41,8 +66,15 @@ class BaseArticleController {
   async createBaseArticle(req, res) {
     try {
       const newBaseArticle = req.body;
-      const createdBaseArticle = await BaseArticleModel.create(newBaseArticle);
-      res.status(201).json(createdBaseArticle);
+      await BaseArticleModel.create(newBaseArticle,(result)=>{
+        res.status(201).json(result);
+      })
+      // .then(article => {
+      //   res.status(201).json(article);
+      // })
+      // .catch(error => {
+      //   next(error);
+      // });
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while creating the article' });
     }
@@ -51,12 +83,21 @@ class BaseArticleController {
   async getBaseArticle(req, res) {
     try {
       const BasearticleId = parseInt(req.params.id);
-      const Basearticle = await BaseArticleModel.findById(BasearticleId);
-      if (Basearticle) {
-        res.json(Basearticle);
-      } else {
-        res.status(404).json({ message: 'BaseArticle not found' });
-      }
+      await BaseArticleModel.findById(BasearticleId,(result)=>{
+        if (!result) {
+          return res.status(404).json({ message: 'BaseArticle not found' });
+        }
+        res.json(result);
+      })
+      // .then(article => {
+      //   if (!article) {
+      //     return res.status(404).json({ message: 'Article not found' });
+      //   }
+      //   res.json(article);
+      // })
+      // .catch(error => {
+      //   next(error);
+      // });
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while fetching the Basearticle' });
     }
@@ -64,9 +105,17 @@ class BaseArticleController {
 
   async getAllBaseArticles(req, res) {
     try {
-      const Basearticles = await BaseArticleModel.findAll();
-      res.json(Basearticles);
+      await BaseArticleModel.findAll((result)=>{
+        res.json(result);
+    })
+    // .then(articles => {
+    //   res.json(articles);
+    // })
+    // .catch(error => {
+    //   next(error);
+    // });
     } catch (error) {
+      console.log(error)
       res.status(500).json({ error: 'An error occurred while fetching Basearticles' });
     }
   }
@@ -78,8 +127,10 @@ class DimensionController {
   async createDimension(req, res) {
     try {
       const newDimension = req.body;
-      const createdDimension = await DimensionModel.create(newArticle);
-      res.status(201).json(createdDimension);
+      await DimensionModel.create(newDimension,(result)=>{
+        res.status(201).json(result);
+      })
+   
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while creating the Dimension' });
     }
@@ -88,12 +139,17 @@ class DimensionController {
   async getDimension(req, res) {
     try {
       const DimensionId = parseInt(req.params.id);
-      const Dimension = await DimensionModel.findById(DimensionId);
-      if (Dimension) {
-        res.json(Dimension);
-      } else {
-        res.status(404).json({ message: 'Dimension not found' });
-      }
+      await DimensionModel.findById(DimensionId,(result)=>{
+        if (!result) {
+          return res.status(404).json({ message: 'Dimension not found' });
+        }
+        res.json(result);
+      })
+      // if (Dimension) {
+      //   res.json(Dimension);
+      // } else {
+      //   res.status(404).json({ message: 'Dimension not found' });
+      // }
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while fetching the Dimension' });
     }
@@ -101,8 +157,10 @@ class DimensionController {
 
   async getAllDimensions(req, res) {
     try {
-      const Dimensions = await DimensionModel.findAll();
-      res.json(Dimensions);
+      await DimensionModel.findAll((result)=>{
+        res.json(result);
+    })
+      
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while fetching Dimensions' });
     }
@@ -112,6 +170,6 @@ class DimensionController {
 }
 
 
-module.exports = { ArticleController:ArticleController(),
-  BaseArticleController:BaseArticleController(),
-  DimensionController:DimensionController()}
+module.exports = { ArticleController:new ArticleController(),
+  BaseArticleController:new BaseArticleController(),
+  DimensionController:new DimensionController()}

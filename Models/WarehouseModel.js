@@ -1,38 +1,40 @@
-const pool = require("./db"); // Assuming you have a database connection module
+const res = require("express/lib/response");
+const  connection = require("./db"); // Assuming you have a database connection module
 
 
 
 class WarehouseModel {
-    async create(warehouseData) {
+    async create(warehouseData,callback) {
       try {
-        const query = 'INSERT INTO warehouse (warehouseName, Reference) VALUES (?, ?)';
-        const values = [
-            warehouseData.warehouseName,
-            warehouseData.Reference
-        ];
-  
-        const [result] = await pool.query(query, values);
-        return { id: result.insertId, ...warehouseData };
+        const query = `INSERT INTO warehouse (warehouseName, Reference) VALUES (${ warehouseData.warehouseName}, ${warehouseData.Reference})`;
+       
+       
+        await connection.query(query,(err,result)=>{
+          callback(err,{ id: result.insertId, ...warehouseData })
+        })
+
       } catch (error) {
         throw error;
       }
     }
   
-    async findById(id) {
+    async findById(id,callback) {
       try {
-        const query = 'SELECT * FROM warehouse WHERE idwarehouse = ?';
-        const [rows] = await pool.query(query, [id]);
-        return rows[0];
+        const query = `SELECT * FROM warehouse WHERE idwarehouse = ${id}`;
+        connection.query(query,(err,result)=>{
+          callback(err,result)
+        } );
       } catch (error) {
         throw error;
       }
     }
   
-    async findAll() {
+    async findAll(callback) {
       try {
         const query = 'SELECT * FROM warehouse';
-        const [rows] = await pool.query(query);
-        return rows;
+        connection.query(query, (err,result)=>{
+          callback(err,result)
+        });
       } catch (error) {
         throw error;
       }
@@ -42,5 +44,5 @@ class WarehouseModel {
   }
   
 module.exports = {
-    WarehouseModel:WarehouseModel()
+    WarehouseModel:new WarehouseModel()
 }

@@ -1,128 +1,114 @@
-const pool = require("./db"); // Assuming you have a database connection module
+const {connection} = require("./db"); // Assuming you have a database connection module
 
 class ArticleModel {
-  async create(articleData) {
-    try {
-      const query = 'INSERT INTO Article (SalePrice, Cost, Reference, BarCode, idBaseArticle, idDimension) VALUES (?, ?, ?, ?, ?, ?)';
-      const values = [
-        articleData.SalePrice,
-        articleData.Cost,
-        articleData.Reference,
-        articleData.BarCode,
-        articleData.idBaseArticle,
-        articleData.idDimension
-      ];
+  async create(articleData,callback) {
+    const query = `INSERT INTO Article (SalePrice, Cost, Reference, BarCode, idBaseArticle, idDimension) VALUES 
+    (${articleData.SalePrice}, ${articleData.Cost}, ${articleData.Reference}, ${articleData.BarCode}, ${articleData.idBaseArticle}, ${articleData.idDimension})`;
+   
 
-      const [result] = await pool.query(query, values);
-      return { id: result.insertId, ...articleData };
-    } catch (error) {
-      throw error;
-    }
+    await connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result)
+    })
   }
 
-  async findById(id) {
-    try {
-      const query = 'SELECT * FROM Article WHERE idArticle = ?';
-      const [rows] = await pool.query(query, [id]);
-      return rows[0];
-    } catch (error) {
-      throw error;
-    }
+  async findById(id,callback) {
+    const query = `SELECT * FROM Article WHERE idArticle = ${id}`;
+    await connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result[0])
+    })
   }
 
-  async findAll() {
-    try {
-      const query = 'SELECT * FROM Article';
-      const [rows] = await pool.query(query);
-      return rows;
-    } catch (error) {
-      throw error;
-    }
+  async findAll(callback) {
+    const query = 'SELECT * FROM Article';
+    await connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result)
+    })
+  
   }
+
 
   // You can add more methods for updating and deleting articles as needed
 }
 
 
 class BaseArticleModel {
-  async create(BaseArticleData) {
-    try {
-      const query = 'INSERT INTO BaseArticle (Name) VALUES (?)';
-      const values = [
-        BaseArticleData.Name
-      ];
+  async create(BaseArticleData,callback) {
+    const query = `INSERT INTO BaseArticle (Name) VALUES (${BaseArticleData.Name})`;
+  
 
-      const [result] = await pool.query(query, values);
-      return { id: result.insertId, ...BaseArticleData };
-    } catch (error) {
-      throw error;
-    }
+    await connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result)
+    })
   }
 
-  async findById(id) {
-    try {
-      const query = 'SELECT * FROM BaseArticle WHERE idBaseArticle = ?';
-      const [rows] = await pool.query(query, [id]);
-      return rows[0];
-    } catch (error) {
-      throw error;
-    }
+  async findById(id,callback) {
+    const query = `SELECT * FROM BaseArticle WHERE idBaseArticle = ${id}`;
+
+    await connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result[0])
+    })
   }
 
-  async findAll() {
-    try {
-      const query = 'SELECT * FROM BaseArticle';
-      const [rows] = await pool.query(query);
-      return rows;
-    } catch (error) {
-      throw error;
-    }
+  async findAll(callback) {
+    const query = 'SELECT * FROM BaseArticle';
+    await  connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result)
+    })
   }
+
+  
 
   // You can add more methods for updating and deleting articles as needed
 }
 
 
 class DimensionModel {
-  async create(DimensionData) {
-    try {
-      const query = 'INSERT INTO Dimension (description,Title) VALUES (?)';
-      const values = [
-        DimensionData.description,
-        DimensionData.Title
-      ];
+  async create(DimensionData,callback) {
+    const query = `INSERT INTO Dimension (description,Title) VALUES (${DimensionData.description},${ DimensionData.Title})`;
+   
 
-      const [result] = await pool.query(query, values);
-      return { id: result.insertId, ...DimensionData };
-    } catch (error) {
-      throw error;
-    }
+    await  connection.query(query, (err,result)=>{
+      if(err) throw err;
+      else
+      callback(result)
+    })
   }
 
-  async findById(id) {
-    try {
-      const query = 'SELECT * FROM Dimension WHERE idDimension = ?';
-      const [rows] = await pool.query(query, [id]);
-      return rows[0];
-    } catch (error) {
-      throw error;
-    }
+  async findById(id,callback) {
+    const query = `SELECT * FROM Dimension WHERE idDimension = ${id}`;
+    await  connection.query(query, (err,result)=>{
+      if(err) throw err;
+      else
+      callback(result[0])
+    })
   }
 
-  async findAll() {
-    try {
-      const query = 'SELECT * FROM Dimension';
-      const [rows] = await pool.query(query);
-      return rows;
-    } catch (error) {
-      throw error;
-    }
+  async findAll(callback) {
+    const query = 'SELECT * FROM Dimension';
+    await  connection.query(query,(err,result)=>{
+      if(err) throw err;
+      else
+      callback(result)
+    })
   }
+
 
   // You can add more methods for updating and deleting articles as needed
 }
 
 
-module.exports = {ArticleModel: ArticleModel(),
-                  BaseArticleModel: BaseArticleModel(),
-                  DimensionModel:DimensionModel()}
+module.exports = {ArticleModel:new ArticleModel(),
+                  BaseArticleModel:new BaseArticleModel(),
+                  DimensionModel:new DimensionModel()}

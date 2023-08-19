@@ -5,13 +5,13 @@ const router = express.Router();
 
 
 // Create a new article
-router.post('/', BaseArticleController.createArticle);
+router.post('/', BaseArticleController.createBaseArticle);
 
 // Get a specific article by ID
-router.get('/:id', BaseArticleController.getArticle);
+router.get('/:id', BaseArticleController.getBaseArticle);
 
 // Get all articles
-router.get('/', BaseArticleController.getAllArticles);
+router.get('/', BaseArticleController.getAllBaseArticles);
 
 
 // Define more routes for updating and deleting articles
