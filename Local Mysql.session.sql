@@ -28,7 +28,7 @@ create table Actor(
 	idActor int primary key auto_increment,
 	Name text,
 	Reference text,
-	LocalStock bool
+	LocalStock BOOLEAN
 );
 
 
@@ -159,5 +159,9 @@ FROM Operation o
 JOIN TypeOperation ot ON o.idType = ot.idType
 ORDER BY o.DateOp DESC
 LIMIT 10; -- You can adjust the number of recent operations shown
+
+
+
+
 INSERT INTO BaseArticle ( Name)
 VALUES ( 'Product 1');

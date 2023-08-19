@@ -43,6 +43,7 @@ class ArticleController {
   }
 
   async getAllArticles(req, res,next) {
+    console.log("test")
     try {
       await ArticleModel.findAll((result)=>{
         res.json(result);
