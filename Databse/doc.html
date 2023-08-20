@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Documentation: Article Management System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Article Management System Database Documentation</h1>
+        
+        <h2>Tables</h2>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">BaseArticle: Represents base articles with their IDs and names.</li>
+            <li class="list-group-item">Dimension: Contains dimensions with their descriptions and titles.</li>
+            <li class="list-group-item">Article: Stores articles' sale price, cost, reference, barcode, and associations.</li>
+            <!-- Add other table items here -->
+        </ul>
+        
+        <h2>Functions</h2>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">UpdateWarehouseQuantity: A function to update article quantities in warehouses based on operations.</li>
+            <li class="list-group-item">IsArticleQuantityAvailable: Checks if article quantities are available in a warehouse for requested operations.</li>
+            <!-- Add other function items here -->
+        </ul>
+        
+        <h2>Triggers</h2>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">After_Update_Confirm: A trigger that updates warehouse quantities after confirming an operation.</li>
+            <!-- Add other trigger items here -->
+        </ul>
+        
+        <h2>Views</h2>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">ArticleInfo: Provides information about articles, their base article names, dimensions, sale prices, costs, references, and barcodes.</li>
+            <li class="list-group-item">RecentOperations: Displays recent operation details including operation types, actors, warehouses, dates, and confirmations.</li>
+            <!-- Add other view items here -->
+        </ul>
+        
+        <p class="mb-0">For more details, refer to the SQL script provided.</p>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

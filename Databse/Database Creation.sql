@@ -1,97 +1,97 @@
-
-
-create table BaseArticle(
-	idBaseArticle int primary key auto_increment,
-	Name text
+-- Table: BaseArticle
+CREATE TABLE BaseArticle (
+    idBaseArticle INT PRIMARY KEY AUTO_INCREMENT,
+    Name TEXT
 );
 
-create table Dimension(
-	idDimension int auto_increment primary key,
-	description text,
-	Title text
+-- Table: Dimension
+CREATE TABLE Dimension (
+    idDimension INT AUTO_INCREMENT PRIMARY KEY,
+    description TEXT,
+    Title TEXT
 );
 
-Create Table Article(
-    idArticle int primary key auto_increment,
-    SalePrice double,
-	Cost double,
-	Reference text,
-	BarCode text,
-    idBaseArticle int,
-    idDimension int,
-    constraint FK_Base_article FOREIGN KEY (idBaseArticle) REFERENCES BaseArticle(idBaseArticle),
-    constraint FK_Demension_article FOREIGN KEY (idDimension) REFERENCES Dimension(idDimension)
+-- Table: Article
+CREATE TABLE Article (
+    idArticle INT PRIMARY KEY AUTO_INCREMENT,
+    SalePrice DOUBLE,
+    Cost DOUBLE,
+    Reference TEXT,
+    BarCode TEXT,
+    idBaseArticle INT,
+    idDimension INT,
+    FOREIGN KEY (idBaseArticle) REFERENCES BaseArticle(idBaseArticle),
+    FOREIGN KEY (idDimension) REFERENCES Dimension(idDimension)
+);
+
+-- Table: Actor
+CREATE TABLE Actor (
+    idActor INT PRIMARY KEY AUTO_INCREMENT,
+    Name TEXT,
+    Reference TEXT
+);
+
+-- Table: Warehouse
+CREATE TABLE Warehouse (
+    idWarehouse INT PRIMARY KEY AUTO_INCREMENT,
+    warehouseName TEXT,
+    Reference TEXT
+);
+
+-- Table: Article_in_warehouse
+CREATE TABLE Article_in_warehouse (
+    idWarehouse INT,
+    idArticle INT,
+    Quantity LONG,
+    Lot TEXT,
+    PRIMARY KEY (idWarehouse, idArticle),
+    FOREIGN KEY (idArticle) REFERENCES Article(idArticle),
+    FOREIGN KEY (idWarehouse) REFERENCES Warehouse(idWarehouse)
+);
+
+-- Table: TypeOperation
+CREATE TABLE TypeOperation (
+    idType INT PRIMARY KEY AUTO_INCREMENT,
+    Title TEXT,
+    Favorite BOOLEAN
+);
+
+-- Table: Operation
+CREATE TABLE Operation (
+    idOperation INT PRIMARY KEY AUTO_INCREMENT,
+    idType INT,
+    idActor INT,
+    idWarehouse INT,
+    DateOp DATETIME,
+    Confirme BOOLEAN,
+    FOREIGN KEY (idType) REFERENCES TypeOperation(idType),
+    FOREIGN KEY (idActor) REFERENCES Actor(idActor),
+    FOREIGN KEY (idWarehouse) REFERENCES Warehouse(idWarehouse)
+);
+
+-- Table: LineOperation
+CREATE TABLE LineOperation (
+    idLineOperation INT PRIMARY KEY AUTO_INCREMENT,
+    idArticle INT,
+    idOperation INT,
+    Quantity INT,
+    FOREIGN KEY (idArticle) REFERENCES Article(idArticle),
+    FOREIGN KEY (idOperation) REFERENCES Operation(idOperation)
 );
 
 
-create table Actor(
-	idActor int primary key auto_increment,
-	Name text,
-	Reference text
-);
+-- FUNCTION
 
+-- Set global log_bin_trust_function_creators to 1
+SET GLOBAL log_bin_trust_function_creators = 1;
 
-create table warehouse(
-	idwarehouse int primary key auto_increment,
-	warehouseName text,
-	Reference text
-);
-
-create table Article_in_warehouse(
-	idwarehouse int,
-	idArticle int,
-	Quantity long,
-	Lot text,
-	primary key(idwarehouse,idArticle),
-	constraint FK_AIS_Article foreign key (idArticle) references Article(idArticle),
-	constraint FK_AIS_Stock foreign key (idwarehouse) references warehouse(idwarehouse)
-);
-
-
-create table TypeOperation(
-	idType int primary key auto_increment,
-	Title text,
-    favorite BOOLEAN
-);
-
-
-
-
-create table Operation(
-	idOperation int primary key auto_increment,
-	idType int,
-    idActor int,
-	idwarehouse int,
-	DateOp datetime,
-	Confirme BOOLEAN,
-	constraint FK_OPTYPE foreign key (idType) references TypeOperation(idType),
-    constraint FK_Tr_Actor foreign key (idActor) references Actor(idActor),
-	constraint FK_Operation_warehouse foreign key (idwarehouse) references warehouse(idwarehouse)
-);
-
-
-create table LineOperation(
-    idLineOperation int PRIMARY KEY auto_increment,
-    idArticle int ,
-	idOperation int,
-	Quantity int,
-    constraint FK_OA_Article foreign key (idArticle) references Article(idArticle),
-    constraint FK_OA_OpAr foreign key (idOperation) references Operation(idOperation)
-);
-
--- Inserting the new types of operations
-INSERT INTO TypeOperation (Title, favorite)
-VALUES ('Receipts', true), ('Delivery Orders', true);
-
-
-
-set global log_bin_trust_function_creators=1;
-
+-- Function: UpdateWarehouseQuantity
 DELIMITER //
 CREATE FUNCTION UpdateWarehouseQuantity(operationId INT) RETURNS BOOLEAN
     DETERMINISTIC
     READS SQL DATA
 BEGIN
+
     DECLARE done INT DEFAULT FALSE;
     DECLARE articleId, warehouseId, quantityToUpdate INT;
     DECLARE cur CURSOR FOR
@@ -122,7 +122,7 @@ END;
 //
 DELIMITER ;
 
-
+-- Trigger: After_Update_Confirm
 DELIMITER //
 CREATE TRIGGER After_Update_Confirm
 AFTER UPDATE ON Operation
@@ -137,15 +137,13 @@ END;
 //
 DELIMITER ;
 
-
-
+-- Function: IsArticleQuantityAvailable
 DELIMITER //
-
 CREATE FUNCTION IsArticleQuantityAvailable(articleId INT, warehouseId INT, requestedQuantity INT) RETURNS BOOLEAN
     DETERMINISTIC
     READS SQL DATA
 BEGIN
-    DECLARE availableQuantity INT;
+     DECLARE availableQuantity INT;
     
     -- Get the available quantity of the article in the warehouse
     SELECT Quantity INTO availableQuantity
@@ -164,6 +162,9 @@ DELIMITER ;
 
 
 
+-- VIEWS
+
+-- View: ArticleInfo
 CREATE VIEW ArticleInfo AS
 SELECT
     a.idArticle,
@@ -178,7 +179,7 @@ JOIN BaseArticle ba ON a.idBaseArticle = ba.idBaseArticle
 JOIN Dimension d ON a.idDimension = d.idDimension;
 
 
-
+-- View: RecentOperations
 CREATE VIEW RecentOperations AS
 SELECT
     o.idOperation,
@@ -189,9 +190,10 @@ SELECT
     o.Confirme
 FROM Operation o
 JOIN TypeOperation ot ON o.idType = ot.idType
-ORDER BY o.DateOp; -- You can adjust the number of recent operations shown
+ORDER BY o.DateOp;
 
 
+-- View: ArticleWarehouseDetails
 CREATE VIEW ArticleWarehouseDetails AS
 SELECT
     a.idArticle,
@@ -212,6 +214,7 @@ JOIN Article_in_warehouse aiw ON a.idArticle = aiw.idArticle
 JOIN warehouse w ON aiw.idwarehouse = w.idwarehouse;
 
 
+-- View: ActorOperations
 CREATE VIEW ActorOperations AS
 SELECT
     a.idActor,
@@ -229,6 +232,7 @@ LEFT JOIN TypeOperation ot ON o.idType = ot.idType
 LEFT JOIN warehouse w ON o.idwarehouse = w.idwarehouse;
 
 
+-- View: ActorBoughtArticles
 CREATE VIEW ActorBoughtArticles AS
 SELECT
     a.idActor,
@@ -245,6 +249,8 @@ JOIN Article art ON oa.idArticle = art.idArticle
 JOIN BaseArticle ba ON art.idBaseArticle = ba.idBaseArticle;
 
 
+
+-- View: WarehouseOperations
 CREATE VIEW WarehouseOperations AS
 SELECT
     w.idwarehouse,

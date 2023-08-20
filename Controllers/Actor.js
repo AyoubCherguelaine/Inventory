@@ -1,11 +1,11 @@
-const {ActorModel} = require('../Models/ActorModel');
+const {Actor} = require('../Models/ActorModel');
 
 class ActorController {
     
   async createActor(req, res) {
     try {
       const newActor = req.body;
-      await ActorModel.create(newActor,(err,result)=>{
+      await Actor.create(newActor,(err,result)=>{
         if(err) res.status(500).json(err)
         else{
           res.status(201).json(result);
@@ -20,7 +20,7 @@ class ActorController {
   async getActor(req, res) {
     try {
       const ActorId = parseInt(req.params.id);
-      await ActorModel.findById(ActorId,(err,result)=>{
+      await Actor.findById(ActorId,(err,result)=>{
         if(err) res.status(500).json(err)
         else{
           let Actor = result[0]
@@ -38,7 +38,7 @@ class ActorController {
 
   async getAllActors(req, res) {
     try {
-        await ActorModel.findAll((err,result)=>{
+        await Actor.findAll((err,result)=>{
         if(err) res.status(500).json(err)
         else{
           res.status(201).json(result);

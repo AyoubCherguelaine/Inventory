@@ -1,7 +1,7 @@
 // DB.js
 const {connection} = require('./db'); // Import your database connection here
 
-class ActorModel{
+class Actor{
 
   async create(actorData, callback) {
 
@@ -34,5 +34,5 @@ class ActorModel{
 
 
 module.exports = {
-    ActorModel:new ActorModel()
+  Actor:new Actor()
 };

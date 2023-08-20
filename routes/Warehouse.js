@@ -1,5 +1,5 @@
 const express = require('express');
-const {WarehouseController,Article_in_warehouseController} = require('../Controllers/WarehouseController');
+const {WarehouseController,Article_in_warehouseController} = require('../Controllers/Warehouse')
 
 const router = express.Router();
 
@@ -17,13 +17,13 @@ router.get('/', WarehouseController.getAllWarehouses);
 
 
 // Create a new Article_in_warehouse 
-router.post('/article/', Article_in_warehouseController.createArticle_in_warehouse);
+router.post('/article/stock', Article_in_warehouseController.createArticle_in_warehouse);
 
 // Get a specific Article_in_warehouse by ID
-router.get('/article/:idwarehouse/:idArticle', Article_in_warehouseController.getArticle_in_warehouse);
+router.get('/:idwarehouse/article/stock/:idArticle', Article_in_warehouseController.getArticle_in_warehouse);
 
 // Get all Article_in_warehouse
-router.get('/article/', Article_in_warehouseController.getAllArticle_in_warehouse);
+router.get('/article/stock', Article_in_warehouseController.getAllArticle_in_warehouse);
 
 
 
