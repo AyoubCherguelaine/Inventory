@@ -17,13 +17,13 @@ INSERT INTO Article (SalePrice, Cost, Reference, BarCode, idBaseArticle, idDimen
     (200.00, 100.00, 'REF789', 'BC789', 3, 3);
 
 -- Inserting data into Actor
-INSERT INTO Actor (Name, Reference, LocalStock) VALUES
-    ('Supplier A', 'SUPA123', FALSE),
-    ('Supplier B', 'SUPB456', FALSE),
-    ('Warehouse 1', 'WH1', TRUE);
+INSERT INTO Actor (Name, Reference) VALUES
+    ('Supplier A', 'SUPA123'),
+    ('Supplier B', 'SUPB456'),
+    ('Warehouse 1', 'WH1');
 
 -- Inserting data into warehouse
-INSERT INTO warehouse (warehouseName, Reference) VALUES
+INSERT INTO Warehouse (warehouseName, Reference) VALUES
     ('Warehouse A', 'WH-A'),
     ('Warehouse B', 'WH-B');
 
@@ -53,30 +53,42 @@ INSERT INTO LineOperation (idArticle, idOperation, Quantity) VALUES
 select IsArticleQuantityAvailable(1,1,100);
 
 
-SELECT * FROM ArticleQuantities;
-
 
 SELECT * FROM RecentOperations;
 
 
-SELECT * FROM WarehouseStock;
-
-
-
 SELECT * FROM ActorOperations;
 
-
-
-
-
-
 SELECT * FROM ActorBoughtArticles;
-
-
-
 
 select * from ArticleWarehouseDetails;
 
 select * from ArticleInfo
 
 select * from WarehouseOperations
+
+
+drop VIEW `OperationDetails`;
+-- View: OperationDetails
+
+
+CREATE VIEW OperationInfo AS
+SELECT
+    o.idOperation,
+    ot.idType,
+    ot.Title AS OperationType,
+    a.idActor,
+    a.Name AS ActorName,
+    w.idWarehouse,
+    w.warehouseName,
+    o.DateOp,
+    o.Confirme
+FROM Operation o
+JOIN TypeOperation ot ON o.idType = ot.idType
+JOIN Actor a ON o.idActor = a.idActor
+JOIN Warehouse w ON o.idWarehouse = w.idWarehouse
+
+
+SELECT * from OperationInfo;
+
+select * from OperationDetails;

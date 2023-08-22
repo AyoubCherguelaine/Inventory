@@ -164,12 +164,16 @@ DELIMITER ;
 
 -- VIEWS
 
+drop VIEW `ArticleInfo`;
 -- View: ArticleInfo
 CREATE VIEW ArticleInfo AS
 SELECT
     a.idArticle,
-    ba.Name AS BaseArticleName,
-    d.Title AS DimensionTitle,
+    CONCAT(ba.Name ,' ',d.Title) as ArticleName,
+    ba.`idBaseArticle`,
+    ba.Name AS BaseName,
+    d.`idDimension`,
+    d.Title AS Dimension,
     a.SalePrice,
     a.Cost,
     a.Reference,
@@ -211,7 +215,7 @@ FROM Article a
 JOIN BaseArticle ba ON a.idBaseArticle = ba.idBaseArticle
 JOIN Dimension d ON a.idDimension = d.idDimension
 JOIN Article_in_warehouse aiw ON a.idArticle = aiw.idArticle
-JOIN warehouse w ON aiw.idwarehouse = w.idwarehouse;
+JOIN Warehouse w ON aiw.idwarehouse = w.idwarehouse;
 
 
 -- View: ActorOperations
@@ -220,7 +224,6 @@ SELECT
     a.idActor,
     a.Name AS ActorName,
     a.Reference AS ActorReference,
-    a.LocalStock,
     o.idOperation,
     ot.Title AS OperationType,
     w.warehouseName,
@@ -229,7 +232,7 @@ SELECT
 FROM Actor a
 LEFT JOIN Operation o ON a.idActor = o.idActor
 LEFT JOIN TypeOperation ot ON o.idType = ot.idType
-LEFT JOIN warehouse w ON o.idwarehouse = w.idwarehouse;
+LEFT JOIN Warehouse w ON o.idwarehouse = w.idwarehouse;
 
 
 -- View: ActorBoughtArticles
@@ -238,7 +241,6 @@ SELECT
     a.idActor,
     a.Name AS ActorName,
     a.Reference AS ActorReference,
-    a.LocalStock,
     oa.idArticle,
     ba.Name AS ArticleName,
     oa.Quantity AS BoughtQuantity
@@ -260,7 +262,32 @@ SELECT
     a.Name AS ActorName,
     o.DateOp,
     o.Confirme
-FROM warehouse w
+FROM Warehouse w
 LEFT JOIN Operation o ON w.idwarehouse = o.idwarehouse
 LEFT JOIN TypeOperation ot ON o.idType = ot.idType
 LEFT JOIN Actor a ON o.idActor = a.idActor;
+
+
+CREATE VIEW OperationDetails AS
+SELECT
+    o.idOperation,
+    ot.idType,
+    ot.Title AS OperationType,
+    a.idActor,
+    a.Name AS ActorName,
+    w.idWarehouse,
+    w.warehouseName,
+    o.DateOp,
+    o.Confirme,
+    oa.idArticle,
+    ba.Name AS ArticleName,
+    oa.Quantity AS Quantity,
+    aow.Lot AS ArticleLot
+FROM Operation o
+JOIN TypeOperation ot ON o.idType = ot.idType
+JOIN Actor a ON o.idActor = a.idActor
+JOIN Warehouse w ON o.idWarehouse = w.idWarehouse
+LEFT JOIN LineOperation oa ON o.idOperation = oa.idOperation
+LEFT JOIN Article art ON oa.idArticle = art.idArticle
+LEFT JOIN BaseArticle ba ON art.idBaseArticle = ba.idBaseArticle
+LEFT JOIN Article_in_warehouse aow ON o.idWarehouse = aow.idWarehouse AND oa.idArticle = aow.idArticle;

@@ -1,7 +1,9 @@
 const {connection} = require("./db"); // Assuming you have a database connection module
 
-class ArticleModel {
-  async create(articleData,callback) {
+
+
+class Article {
+  static async create(articleData,callback) {
     const query = `INSERT INTO Article (SalePrice, Cost, Reference, BarCode, idBaseArticle, idDimension) VALUES 
     (${articleData.SalePrice}, ${articleData.Cost}, ${articleData.Reference}, ${articleData.BarCode}, ${articleData.idBaseArticle}, ${articleData.idDimension})`;
    
@@ -13,7 +15,7 @@ class ArticleModel {
     })
   }
 
-  async findById(id,callback) {
+  static async findById(id,callback) {
     const query = `SELECT * FROM Article WHERE idArticle = ${id}`;
     await connection.query(query,(err,result)=>{
       if(err) throw err;
@@ -22,7 +24,7 @@ class ArticleModel {
     })
   }
 
-  async findAll(callback) {
+  static async findAll(callback) {
     const query = 'SELECT * FROM Article';
     await connection.query(query,(err,result)=>{
       if(err) throw err;
@@ -32,13 +34,50 @@ class ArticleModel {
   
   }
 
-
-  // You can add more methods for updating and deleting articles as needed
+    static async find(query, callback) {
+      let q = 'SELECT * FROM Article WHERE 1=1';
+    
+      const conditions = [];
+      const values = [];
+    
+      if (query.hasOwnProperty('SalePrice')) {
+        conditions.push('SalePrice = ?');
+        values.push(query['SalePrice']);
+      }
+      if (query.hasOwnProperty('Cost')) {
+        conditions.push('Cost = ?');
+        values.push(query['Cost']);
+      }
+      if (query.hasOwnProperty('Reference')) {
+        conditions.push('Reference LIKE ?');
+        values.push(`%${query['Reference']}%`);
+      }
+      if (query.hasOwnProperty('BarCode')) {
+        conditions.push('BarCode LIKE ?');
+        values.push(`%${query['BarCode']}%`);
+      }
+      if (query.hasOwnProperty('idBaseArticle')) {
+        conditions.push('idBaseArticle = ?');
+        values.push(query['idBaseArticle']);
+      }
+      if (query.hasOwnProperty('idDimension')) {
+        conditions.push('idDimension = ?');
+        values.push(query['idDimension']);
+      }
+    
+      if (conditions.length > 0) {
+        q += ' AND ' + conditions.join(' AND ');
+      }
+    
+      connection.query(q, values, (err, result) => {
+        callback(err, result);
+      });
+    }
 }
 
 
-class BaseArticleModel {
-  async create(BaseArticleData,callback) {
+class BaseArticle {
+  static async create(BaseArticleData,callback) {
     const query = `INSERT INTO BaseArticle (Name) VALUES (${BaseArticleData.Name})`;
   
 
@@ -49,7 +88,7 @@ class BaseArticleModel {
     })
   }
 
-  async findById(id,callback) {
+  static async findById(id,callback) {
     const query = `SELECT * FROM BaseArticle WHERE idBaseArticle = ${id}`;
 
     await connection.query(query,(err,result)=>{
@@ -59,7 +98,7 @@ class BaseArticleModel {
     })
   }
 
-  async findAll(callback) {
+  static async findAll(callback) {
     const query = 'SELECT * FROM BaseArticle';
     await  connection.query(query,(err,result)=>{
       if(err) throw err;
@@ -69,13 +108,35 @@ class BaseArticleModel {
   }
 
   
-
-  // You can add more methods for updating and deleting articles as needed
+  static async find(query, callback) {
+    let q = 'SELECT * FROM BaseArticle WHERE 1=1';
+  
+    const conditions = [];
+    const values = [];
+  
+    if (query.hasOwnProperty('idBaseArticle')) {
+      conditions.push('idBaseArticle = ?');
+      values.push(query['idBaseArticle']);
+    }
+    if (query.hasOwnProperty('Name')) {
+      conditions.push('Name LIKE ?');
+      values.push(`%${query['Name']}%`);
+    }
+  
+    if (conditions.length > 0) {
+      q += ' AND ' + conditions.join(' AND ');
+    }
+  
+    connection.query(q, values, (err, result) => {
+      callback(err, result);
+    });
+  }
+  
 }
 
 
-class DimensionModel {
-  async create(DimensionData,callback) {
+class Dimension {
+  static async create(DimensionData,callback) {
     const query = `INSERT INTO Dimension (description,Title) VALUES (${DimensionData.description},${ DimensionData.Title})`;
    
 
@@ -86,7 +147,7 @@ class DimensionModel {
     })
   }
 
-  async findById(id,callback) {
+  static async findById(id,callback) {
     const query = `SELECT * FROM Dimension WHERE idDimension = ${id}`;
     await  connection.query(query, (err,result)=>{
       if(err) throw err;
@@ -95,7 +156,7 @@ class DimensionModel {
     })
   }
 
-  async findAll(callback) {
+  static async findAll(callback) {
     const query = 'SELECT * FROM Dimension';
     await  connection.query(query,(err,result)=>{
       if(err) throw err;
@@ -105,10 +166,36 @@ class DimensionModel {
   }
 
 
-  // You can add more methods for updating and deleting articles as needed
+  static async find(query, callback) {
+    let q = 'SELECT * FROM Dimension WHERE 1=1';
+  
+    const conditions = [];
+    const values = [];
+  
+    if (query.hasOwnProperty('idDimension')) {
+      conditions.push('idDimension = ?');
+      values.push(query['idDimension']);
+    }
+    if (query.hasOwnProperty('description')) {
+      conditions.push('description LIKE ?');
+      values.push(`%${query['description']}%`);
+    }
+    if (query.hasOwnProperty('Title')) {
+      conditions.push('Title LIKE ?');
+      values.push(`%${query['Title']}%`);
+    }
+  
+    if (conditions.length > 0) {
+      q += ' AND ' + conditions.join(' AND ');
+    }
+  
+    connection.query(q, values, (err, result) => {
+      callback(err, result);
+    });
+  }
 }
 
 
-module.exports = {ArticleModel:new ArticleModel(),
-                  BaseArticleModel:new BaseArticleModel(),
-                  DimensionModel:new DimensionModel()}
+module.exports = {ArticleModel: Article,
+                  BaseArticleModel: BaseArticle,
+                  DimensionModel: Dimension}

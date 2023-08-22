@@ -94,3 +94,10 @@ class LineOperationController{
 
 
 }
+
+
+module.exports = {
+    TypeOperationController:new TypeOperationController(),
+    OperationController: new OperationController(),
+    LineOperationController:new LineOperationController()
+}

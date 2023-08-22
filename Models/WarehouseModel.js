@@ -3,10 +3,10 @@ const  {connection} = require("./db"); // Assuming you have a database connectio
 
 
 
-class WarehouseModel {
-    async create(warehouseData,callback) {
+class WarehouseModelSimpleCrud {
+    static async create(warehouseData,callback) {
       try {
-        const query = `INSERT INTO warehouse (warehouseName, Reference) VALUES (${ warehouseData.warehouseName}, ${warehouseData.Reference})`;
+        const query = `INSERT INTO Warehouse (warehouseName, Reference) VALUES (${ warehouseData.warehouseName}, ${warehouseData.Reference})`;
        
        
         await connection.query(query,(err,result)=>{
@@ -18,9 +18,9 @@ class WarehouseModel {
       }
     }
   
-    async findById(id,callback) {
+    static async findById(id,callback) {
       try {
-        const query = `SELECT * FROM warehouse WHERE idwarehouse = ${id}`;
+        const query = `SELECT * FROM Warehouse WHERE idWarehouse = ${id}`;
         connection.query(query,(err,result)=>{
           callback(err,result)
         } );
@@ -29,9 +29,9 @@ class WarehouseModel {
       }
     }
   
-    async findAll(callback) {
+    static async findAll(callback) {
       try {
-        const query = 'SELECT * FROM warehouse';
+        const query = 'SELECT * FROM Warehouse';
         connection.query(query, (err,result)=>{
           callback(err,result)
         });
@@ -39,18 +39,44 @@ class WarehouseModel {
         throw error;
       }
     }
-  
-    // You can add more methods for updating and deleting articles as needed
+    static async find(query, callback) {
+      let q = 'SELECT * FROM Warehouse WHERE 1=1';
+    
+      const conditions = [];
+      const values = [];
+    
+      if (query.hasOwnProperty('idWarehouse')) {
+        conditions.push('idWarehouse = ?');
+        values.push(query['idWarehouse']);
+      }
+      if (query.hasOwnProperty('warehouseName')) {
+        conditions.push('warehouseName LIKE ?');
+        values.push(`%${query['warehouseName']}%`);
+      }
+      if (query.hasOwnProperty('Reference')) {
+        conditions.push('Reference LIKE ?');
+        values.push(`%${query['Reference']}%`);
+      }
+    
+      if (conditions.length > 0) {
+        q += ' AND ' + conditions.join(' AND ');
+      }
+    
+      connection.query(q, values, (err, result) => {
+        callback(err, result);
+      });
+    }
+    
   }
   
 
 
-  class Article_in_warehouseModel {
-    async create(Article_in_warehouseData,callback) {
+  class Article_in_warehouseModelSimpleCrud {
+    static async create(Article_in_warehouseData,callback) {
       try {
         const query = `INSERT INTO Article_in_warehouse (
-          idwarehouse, idArticle, Quantity, Lot) 
-        VALUES (${ Article_in_warehouseData.idwarehouse},
+          idWarehouse, idArticle, Quantity, Lot) 
+        VALUES (${ Article_in_warehouseData.idWarehouse},
            ${Article_in_warehouseData.idArticle},
             ${Article_in_warehouseData.Quantity},
              ${Article_in_warehouseData.Lot})`;
@@ -65,10 +91,10 @@ class WarehouseModel {
       }
     }
   
-    async findById(idwarehouse,idArticle,callback) {
+    static async findById(idWarehouse,idArticle,callback) {
       try {
         const query = `SELECT * FROM Article_in_warehouse WHERE
-         idwarehouse = ${idwarehouse} and idArticle = ${idArticle}`;
+        idWarehouse = ${idWarehouse} and idArticle = ${idArticle}`;
         connection.query(query,(err,result)=>{
           callback(err,result)
         } );
@@ -77,7 +103,7 @@ class WarehouseModel {
       }
     }
   
-    async findAll(callback) {
+    static async findAll(callback) {
       try {
         const query = 'SELECT * FROM Article_in_warehouse';
         connection.query(query, (err,result)=>{
@@ -88,10 +114,41 @@ class WarehouseModel {
       }
     }
   
-    // You can add more methods for updating and deleting articles as needed
+    static async find(query, callback) {
+      let q = 'SELECT * FROM Article_in_warehouse WHERE 1=1';
+    
+      const conditions = [];
+      const values = [];
+    
+      if (query.hasOwnProperty('idWarehouse')) {
+        conditions.push('idWarehouse = ?');
+        values.push(query['idWarehouse']);
+      }
+      if (query.hasOwnProperty('idArticle')) {
+        conditions.push('idArticle = ?');
+        values.push(query['idArticle']);
+      }
+      if (query.hasOwnProperty('Quantity')) {
+        conditions.push('Quantity = ?');
+        values.push(query['Quantity']);
+      }
+      if (query.hasOwnProperty('Lot')) {
+        conditions.push('Lot LIKE ?');
+        values.push(`%${query['Lot']}%`);
+      }
+    
+      if (conditions.length > 0) {
+        q += ' AND ' + conditions.join(' AND ');
+      }
+    
+      connection.query(q, values, (err, result) => {
+        callback(err, result);
+      });
+    }
+    
   }
 
 module.exports = {
-  WarehouseModel:new WarehouseModel(),
-    Article_in_warehouseModel: new Article_in_warehouseModel()
+  WarehouseModel: Warehouse,
+    Article_in_warehouseModel:  Article_in_warehouse
 }
